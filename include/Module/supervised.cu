@@ -1,11 +1,13 @@
+#pragma once
 #include <cuda.h>
 #include <torch/extension.h>
-#include "DeviceDescriptor"
-#include "fusion/optim"
-#include "fusion/data/DataLoader"
+#include "fusion/Tensor/DeviceDescriptor"
+#include "fusion/optimizer"
+#include "fusion/data"
+
 namespace DataLoader = torch::utils::data::DataLoader;
 
-template <typename scalar_t, typename index_t = t_int32, typename grad_step_t>
+template <typename scalar_t, typename grad_step_t, typename index_t = uint32_t>
 __host__ struct HyperParameters {
 	const unsigned index_t epochs;
 	const scalar_t learning_rate;
@@ -17,16 +19,16 @@ __host__ struct HyperParameters {
 
 };
 
-template <typename training_type, typename model_type = t_float32>
-class SupervisedTrainer: DeviceDescriptor { 
+template <typename training_type, typename model_type>
+class SupervisedTrainer : protected DeviceDescriptor { 
 	private:
 		//Defining cuda base
-		__device__ void* kernels[];
+		void* kernels[];	
 		static cudaGraphEdgeData edgeData;
-		static FusionCost* J;
-		static FusionOptimizer* opt;	
+		FusionCost* J;
+		FusionOptimizer* opt;	
 	public:
-		SupervisedTrainer (__device__ void* kernels[]) : kernels(kernels), DeviceDescriptor() {
+		SupervisedTrainer (void* kernels[]) : kernels(kernels), DeviceDescriptor() {
 				
 	};
 		__global__ void fused_propagation() {
@@ -38,13 +40,13 @@ class SupervisedTrainer: DeviceDescriptor {
 		__host__ __forceinline__ void epochLaunch (unsigned int idx, FusionDataLoader* train_loader) {
 			// pass the batch pointer to the fused propagation.	
 			const FusionAccessor data_ptr = train_loader[idx];
-			fused_propagation(data_ptr);
+			this->fused_propagation(data_ptr);
 			// The secondary kernel will be launch to preemptively bring the next batch of data over the already deleted tensors
 			const FusionAccessor next_data_ptr = train_loader[idx];
-			allocate_next_batch(next_data_ptr);
+			this->allocate_next_batch(next_data_ptr);
 			// By allowing programmaticed behaviour, we will be able to load the next batch of data by hiding latency intervals
 		}
-		torch::Tensor* operator()(DataLoader* train_dataloader, DataLoader* val_dataloader, HyperParameters* hyperparameters, FusionOptimizer* optimizer, ) {// Fused propagation
+		torch::Tensor* operator()(DataLoader* train_dataloader, DataLoader* val_dataloader, HyperParameters* hyperparameters, FusionOptimizer* optimizer) {// Fused propagation
 			// Torch dataloder -> Fusion DataLoader
 			// Define the hyperparameters into the optimizer	
 			// create a stream that defines the graph
@@ -56,7 +58,8 @@ class SupervisedTrainer: DeviceDescriptor {
 				}
 		};
 
+	};
 };
 /*
-   torch::Tensor -> Fusion Tensor -> fused propagation ->
+   torch::Tensor -> Fusion Tensor -> fused propagation -> next iteration with programmaticed workflow
  */
