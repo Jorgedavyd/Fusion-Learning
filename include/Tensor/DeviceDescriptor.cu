@@ -1,6 +1,8 @@
 //Describes the device with its properties
 #include <cuda.h>
 #include <torch/extension.h>
+#include <string>
+
 struct DeviceConfig{
 		cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties(&deviceProp,0);
