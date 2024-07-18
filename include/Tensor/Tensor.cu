@@ -20,7 +20,7 @@ class FusionTensorAccessor {
 			// Define how to access data with the mapping
 			return mapping(idx);
 		};
-			
+
 		__device__ T& operator[](unsigned index_t idx) const {
 			// Define how to access data with the mapping
 		};
@@ -55,7 +55,7 @@ class FusionTensorDescriptor {
 			// Optimize tensor allocation
 			this->optimizeTensor();
 		};
-	private:	
+	private:
 		void optimizeTensor (void) {
 			static cudaMalloc((void**)&this->cuda_t, this->size_);
 			// Save tensor data in the coalesced way;
@@ -65,7 +65,7 @@ class FusionTensorDescriptor {
 			// Deallocate or free CUDA or just define it as a one timer
 		};
 
-};	
+};
 
 template <typename T, size_t N, template <typename U> class PtrTraits = DefaultPtrTraits, typename index_t = int32_t>
 class FusionTensor: private FusionTensorBase<T, N, PtrTraits, index_t>, private FusionTensorAccessor<T, N, PtrTraits, index_t> {

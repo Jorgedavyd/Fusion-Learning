@@ -20,25 +20,25 @@ __host__ struct HyperParameters {
 };
 
 template <typename training_type, typename model_type>
-class SupervisedTrainer : protected DeviceDescriptor { 
+class SupervisedTrainer : protected DeviceDescriptor {
 	private:
 		//Defining cuda base
-		void* kernels[];	
+		void* kernels[];
 		static cudaGraphEdgeData edgeData;
 		FusionCost* J;
-		FusionOptimizer* opt;	
+		FusionOptimizer* opt;
 	public:
 		SupervisedTrainer (void* kernels[]) : kernels(kernels), DeviceDescriptor() {
-				
+
 	};
 		__global__ void fused_propagation() {
 			// Define the runtime based on the available kernels and runtimes
-			// Contains all the kernels on a graph		
+			// Contains all the kernels on a graph
 			// Contains programmaticed kernels (model) -> loss (kernel) -> compute the backward pass with the input.
 		}; // Fused propagation
 
 		__host__ __forceinline__ void epochLaunch (unsigned int idx, FusionDataLoader* train_loader) {
-			// pass the batch pointer to the fused propagation.	
+			// pass the batch pointer to the fused propagation.
 			const FusionAccessor data_ptr = train_loader[idx];
 			this->fused_propagation(data_ptr);
 			// The secondary kernel will be launch to preemptively bring the next batch of data over the already deleted tensors
@@ -48,13 +48,13 @@ class SupervisedTrainer : protected DeviceDescriptor {
 		}
 		torch::Tensor* operator()(DataLoader* train_dataloader, DataLoader* val_dataloader, HyperParameters* hyperparameters, FusionOptimizer* optimizer) {// Fused propagation
 			// Torch dataloder -> Fusion DataLoader
-			// Define the hyperparameters into the optimizer	
+			// Define the hyperparameters into the optimizer
 			// create a stream that defines the graph
 			#pragma unroll
 			for (epoch = 0; epoch < hyperparameters.epochs ; epoch++) {
 				#pragma unroll
 				for (i=0; i<length(train_loader); i++) {
-					this->epochLaunch(i, &train_loader)	
+					this->epochLaunch(i, &train_loader)
 				}
 		};
 
