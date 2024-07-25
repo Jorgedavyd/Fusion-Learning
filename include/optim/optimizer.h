@@ -1,9 +1,9 @@
-#ifndef OPTIMIZERBASE_H
-#define OPTIMIZERBASE_H
+#ifndef OPTIMIZER_H
+#define OPTIMIZER_H
 
 #include <cstdint>
 template<typename index_t = uint32_t>
-class OptimizerHandler {};
+class OptmHandler{};
 
 template<typename index_t = uint32_t>
 class OptimizerBase {
@@ -17,4 +17,4 @@ private:
 };
 
 
-#endif //OPTIMIZERBASE_H
+#endif //OPTIMIZER_H

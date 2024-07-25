@@ -1,0 +1,4 @@
+#ifndef K_NEAREST_NEIGHBORS_H
+#define K_NEAREST_NEIGHBORS_H
+class KNN {};
+#endif //K_NEAREST_NEIGHBORS_H

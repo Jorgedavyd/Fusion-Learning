@@ -15,7 +15,7 @@ public:
     FusionTensorDescriptor<index_t>* __host__ operator[](index_t& index);
 
 private:
-    FusionTensorDescriptor</*Add all the template things*/, index_t> tensor;
+    FusionTensorDescriptor</*Add all the template things*/index_t> tensor;
     data::DataLoader* dataloader_ptr;
     FusionTensorDescriptor* __host__ toFusion (torch::Tensor* tensor_ptr);
 };

@@ -1,5 +1,5 @@
-#ifndef VANILLA_H
-#define VANILLA_H
+#ifndef RNN_H
+#define RNN_H
 #include <Module.h>
 
 template <bool train = false>
@@ -20,5 +20,5 @@ public:
     RNN();
 };
 
-#endif //VANILLA_H
+#endif //RNN_H
 
