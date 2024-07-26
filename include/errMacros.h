@@ -1,0 +1,4 @@
+#ifndef ERRMACROS_H
+#define ERRMACROS_H
+#define NOT_IMPLEMENTED_ERROR 1001
+#endif //ERRMACROS_H
